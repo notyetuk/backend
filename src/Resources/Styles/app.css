@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.button-primary {
+  @apply bg-sky-400 hover:bg-sky-500 active:bg-sky-600 px-5 py-2 text-white font-bold shadow rounded-sm;
+}
+
+.button-success {
+  @apply bg-emerald-400 hover:bg-emerald-500 active:bg-emerald-600 px-5 py-2 text-white font-bold shadow rounded-sm;
+}
+
+.button-cancel {
+  @apply bg-red-500 hover:bg-red-600 active:bg-red-700 px-5 py-2 text-white font-bold shadow rounded-sm;
+}
