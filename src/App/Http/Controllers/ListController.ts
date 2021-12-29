@@ -16,6 +16,7 @@ import { Inertia } from '@envuso/core/Packages/Inertia/Inertia';
 
 class ListDTO extends DataTransferObject {
   title: string;
+  cover: string;
 }
 
 interface Pagination {
@@ -61,6 +62,7 @@ export class ListController extends Controller {
   async createList(@dto(false) body: ListDTO) {
     const list = new List();
     list.title = body.title;
+    list.cover = body.cover;
     list.createdAt = new Date();
     await list.save();
 

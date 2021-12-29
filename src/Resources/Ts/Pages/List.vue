@@ -1,11 +1,15 @@
 <template>
-  <Title :title="list.title" />
-  <div class="text-center">
-    <form @submit.prevent="addItem" class="mb-5">
-      <input type="text" v-model="form.title" />
-      <input type="text" v-model="form.list" hidden />
-      <button type="submit" hidden>Add</button>
-    </form>
+  <div class='text-center'>
+    <div :style="`background-image: url(${list.cover})`" class='w-full bg-cover bg-center h-80 pt-40'>
+      <Title :title="list.title" />
+      <form @submit.prevent="addItem" class="mb-5">
+        <input type="text" v-model="form.title" />
+        <input type="text" v-model="form.list" hidden />
+        <button type="submit" hidden>Add</button>
+      </form>
+    </div>
+  </div>
+  <div class="text-center mt-5">
     <ul v-if="items.length > 0">
       <li v-for="item of items" class="mb-5">
         <div class="flex flex-col">
@@ -18,14 +22,20 @@
 
     <div class="mb-5 mt-5 flex justify-center">
       <div>
-        <Link :href="(this.page > 1) ? `?page=${this.page - 1}` : ''"><ArrowCircleLeftIcon class="w-6" /></Link>
+        <Link v-show="this.page > 1" :href="`?page=${this.page - 1}`">
+          <ArrowCircleLeftIcon class="w-6" />
+        </Link>
       </div>
       <div>
-        <Link :href="(items.length > 0) ? `?page=${this.page + 1}` : ''"><ArrowCircleRightIcon class="w-6" /></Link>
+        <Link v-show="items.length > 0" :href="`?page=${this.page + 1}`">
+          <ArrowCircleRightIcon class="w-6" />
+        </Link>
       </div>
     </div>
 
-    <Link href="/list"><button class="button-primary">Go Back.</button></Link>
+    <Link href="/list">
+      <button class="button-primary">Go Back.</button>
+    </Link>
   </div>
 </template>
 

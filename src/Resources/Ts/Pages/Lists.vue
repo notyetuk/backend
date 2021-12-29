@@ -8,8 +8,12 @@
         @click="addingList = !addingList">
         {{ addingList ? 'Cancel' : 'Add a new List' }}
       </button>
-      <form v-if="addingList" @submit.prevent="addList" class="mb-5">
-        <input type="text" v-model="form.title" placeholder="List title." />
+      <form
+        v-if="addingList"
+        @submit.prevent="addList"
+        class="mb-5 flex flex-col space-y-2 w-3/4 mx-auto">
+        <input type="text" v-model="form.title" placeholder="List title." required/>
+        <input type="text" v-model="form.cover" placeholder="Link for a cover image." required/>
         <button type="submit" hidden></button>
       </form>
       <ul class="text-center">
@@ -17,6 +21,10 @@
           <ListItem :item="item" />
         </li>
       </ul>
+
+      <div v-if="lists.length < 1">
+        You have not created any lists yet. Go on and create a new wishlist.
+      </div>
     </div>
   </div>
 </template>
@@ -50,6 +58,7 @@ export default {
     const addingList = ref(props.addingList);
     const form = useForm({
       title: null,
+      cover: null,
     });
 
     const addList = async () => {

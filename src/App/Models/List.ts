@@ -9,6 +9,7 @@ export class List extends Model<List> {
     @id
     _id : ObjectId;
     title: string;
+    cover: string;
     createdAt: Date;
 
 }
