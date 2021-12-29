@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import Home from './Home';
+import Home from '../Layouts/Home';
 import Title from '../Components/Title';
 import ListItem from '../Components/ListItem';
 import { useForm, usePage } from '@inertiajs/inertia-vue3';

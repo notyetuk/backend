@@ -16,19 +16,29 @@
     </ul>
     <div v-if="items.length === 0">No items on this list.</div>
 
-    <button class="button-primary" @click="goBack">Go Back.</button>
+    <div class="mb-5 mt-5 flex justify-center">
+      <div>
+        <Link :href="(this.page > 1) ? `?page=${this.page - 1}` : ''"><ArrowCircleLeftIcon class="w-6" /></Link>
+      </div>
+      <div>
+        <Link :href="(items.length > 0) ? `?page=${this.page + 1}` : ''"><ArrowCircleRightIcon class="w-6" /></Link>
+      </div>
+    </div>
+
+    <Link href="/list"><button class="button-primary">Go Back.</button></Link>
   </div>
 </template>
 
 <script>
-import Home from './Home';
+import Home from '../Layouts/Home';
 import Title from '../Components/Title';
-import { useForm, usePage } from '@inertiajs/inertia-vue3';
+import { useForm, usePage, Link } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
+import { ArrowCircleLeftIcon, ArrowCircleRightIcon } from '@heroicons/vue/outline';
 
 export default {
   name: 'List',
-  components: { Title },
+  components: { Title, ArrowCircleLeftIcon, ArrowCircleRightIcon, Link },
   layout: Home,
   props: {
     list: {
@@ -41,7 +51,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      page: 1,
+    };
   },
   setup(props, context) {
     const items = ref(props.items);
@@ -67,9 +79,14 @@ export default {
       items,
     };
   },
+  mounted() {
+    this.getCurrentPage();
+  },
   methods: {
-    goBack() {
-      window.history.back();
+    getCurrentPage() {
+      let uri = window.location.search.substring(1);
+      let params = new URLSearchParams(uri);
+      this.page = parseInt(params.get('page')) || 1;
     },
   },
 };

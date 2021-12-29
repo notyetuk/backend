@@ -6,7 +6,9 @@ import {
   dto,
   DataTransferObject,
   param,
-  response, request, back,
+  response,
+  request,
+  back,
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
@@ -16,12 +18,17 @@ class ListDTO extends DataTransferObject {
   title: string;
 }
 
+interface Pagination {
+  page: number;
+  limit: number;
+}
+
 //@middleware()
 @controller('/list')
 export class ListController extends Controller {
   @get('/')
   async retrieveLists() {
-    const lists = await List.query().get();
+    const lists = await List.query().orderByDesc('createdAt').get();
     return Inertia.render('Lists', {
       lists,
     });
@@ -29,11 +36,24 @@ export class ListController extends Controller {
 
   @get('/:id')
   async retrieveList(@param id: string) {
+    const { page, limit } = request().query<Pagination>();
+    let skip;
+    if (page == 1 || page == 0) {
+      skip = 0;
+    } else if (page == 2) {
+      skip = limit | 8;
+    } else if (page > 2) {
+      skip = (page - 1) * (limit | 8);
+    }
+
     const list = await List.find(id);
-    const items = await Item.query().whereAllIn('list', [id]).orderByDesc('createdAt').get();
+    const items = await Item.query()
+      .whereAllIn('list', [id])
+      .orderByDesc('createdAt')
+      .get({limit: limit | 8, skip});
     return Inertia.render('List', {
       list,
-      items
+      items,
     });
   }
 
@@ -44,7 +64,8 @@ export class ListController extends Controller {
     list.createdAt = new Date();
     await list.save();
 
-    return response().redirect('/list');
+    return back();
+    // return response().redirect('/list');
     // return response().json({ m: 'list added' });
   }
 }
