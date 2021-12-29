@@ -1,6 +1,8 @@
 <template>
-  <div class='text-center'>
-    <div :style="`background-image: url(${list.cover})`" class='w-full bg-cover bg-center h-80 pt-40'>
+  <div class="text-center">
+    <div
+      :style="`background-image: url(${list.cover})`"
+      class="w-full bg-cover bg-center h-80 pt-40">
       <Title :title="list.title" />
       <form @submit.prevent="addItem" class="mb-5">
         <input type="text" v-model="form.title" />
@@ -12,9 +14,12 @@
   <div class="text-center mt-5">
     <ul v-if="items.length > 0">
       <li v-for="item of items" class="mb-5">
-        <div class="flex flex-col">
+        <div class="flex flex-col w-full">
           <div class="text-lg">{{ item.title }}</div>
           <div class="text-sm">{{ new Date(item.createdAt).toDateString() }}</div>
+          <button class="absolute right-0" @click="removeItem(item._id)">
+            <XCircleIcon class="w-5" />
+          </button>
         </div>
       </li>
     </ul>
@@ -44,11 +49,12 @@ import Home from '../Layouts/Home';
 import Title from '../Components/Title';
 import { useForm, usePage, Link } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
-import { ArrowCircleLeftIcon, ArrowCircleRightIcon } from '@heroicons/vue/outline';
+import { ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon } from '@heroicons/vue/outline';
+import { Inertia } from '@inertiajs/inertia';
 
 export default {
   name: 'List',
-  components: { Title, ArrowCircleLeftIcon, ArrowCircleRightIcon, Link },
+  components: { Title, ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon, Link },
   layout: Home,
   props: {
     list: {
@@ -83,10 +89,21 @@ export default {
       });
     };
 
+    const removeItem = async (id) => {
+      Inertia.delete(`/item/del/${id}`, {
+        preserveScroll: true,
+        onSuccess: () => {
+          console.log('deleted.');
+          items.value = usePage().props.value.items;
+        }
+      });
+    }
+
     return {
       form,
       addItem,
       items,
+      removeItem
     };
   },
   mounted() {
