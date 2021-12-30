@@ -11,11 +11,11 @@ import {
 } from '@envuso/core/Routing';
 import { ObjectId } from 'mongodb';
 import { Item } from '../../Models/Item';
-import { Inertia } from '@envuso/core/Packages/Inertia/Inertia';
 
 class ItemDTO extends DataTransferObject {
   list: ObjectId;
   title: string;
+  image: string;
 }
 
 //@middleware()
@@ -26,6 +26,7 @@ export class ItemController extends Controller {
     const item = new Item();
     item.list = body.list;
     item.title = body.title;
+    item.image = body.image;
     item.createdAt = new Date();
     await item.save();
 

@@ -1,11 +1,35 @@
 <template>
+  <!-- Add a new item modal -->
   <Modal v-show="addingItem" @close-modal="addingItem = false">
+    <Title title="Adding a new item." />
     <form @submit.prevent="addItem" class="mb-5">
-      <input type="text" v-model="form.title" class='w-full' />
+      <input
+        type="text"
+        v-model="form.title"
+        class="w-full mb-5"
+        placeholder="Enter your list name here." />
+      <input
+        type="text"
+        v-model="form.image"
+        class="w-full mb-5"
+        placeholder="Image url. (can be your own)" />
       <input type="text" v-model="form.list" hidden />
-      <button type="submit" hidden>Add</button>
+      <button class="button-primary" type="submit">Add</button>
     </form>
+    <form class="mb-5" @submit.prevent="searchImage">
+      <input
+        type="text"
+        class="w-full"
+        v-model="keyword.v"
+        placeholder="Write keywords to find a suitable image." />
+    </form>
+    <ul class="flex flex-wrap justify-between space-y-2">
+      <li v-for="image of imageResults">
+        <img :src="image.previewURL" alt="image" @click="setImage(image.largeImageURL)" />
+      </li>
+    </ul>
   </Modal>
+
   <div class="text-center">
     <div
       :style="`background-image: url(${list.cover})`"
@@ -55,6 +79,7 @@ import { ref } from 'vue';
 import { ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon } from '@heroicons/vue/outline';
 import { Inertia } from '@inertiajs/inertia';
 import Modal from '../Components/Modal';
+import axios from 'axios';
 
 export default {
   name: 'List',
@@ -73,6 +98,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    pixabayKey: {
+      type: String,
+      default: '',
+    },
+    imageResults: {
+      type: Array,
+      default: [],
+    },
+    showResults: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -81,10 +118,16 @@ export default {
   },
   setup(props, context) {
     const items = ref(props.items);
+    const imageResults = ref(props.imageResults);
+    const showResults = ref(props.showResults);
+    let keyword = {
+      v: null,
+    };
 
     const form = useForm({
       title: null,
       list: props.list._id,
+      image: keyword.v,
     });
 
     const addItem = async () => {
@@ -93,6 +136,7 @@ export default {
         onSuccess: () => {
           form.reset();
           items.value = usePage().props.value.items;
+          imageResults.value = [];
         },
       });
     };
@@ -107,11 +151,29 @@ export default {
       });
     };
 
+    const searchImage = async () => {
+      axios
+        .get(`https://pixabay.com/api/?key=${props.pixabayKey}&q=${keyword.v}`)
+        .then((response) => {
+          imageResults.value = response.data.hits;
+          showResults.value = true;
+        });
+    };
+
+    const setImage = (url) => {
+      form.image = url;
+    };
+
     return {
       form,
       addItem,
       items,
       removeItem,
+      searchImage,
+      imageResults,
+      keyword,
+      showResults,
+      setImage,
     };
   },
   mounted() {

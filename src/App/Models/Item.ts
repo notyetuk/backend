@@ -11,6 +11,7 @@ export class Item extends Model<Item> {
 
     list: ObjectId;
     title: string;
+    image: string;
     createdAt: Date;
 
 }

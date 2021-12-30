@@ -1,6 +1,7 @@
 import {RequestContextContract} from "@envuso/core/Contracts/Routing/Context/RequestContextContract";
 import {InertiaMiddleware} from "@envuso/core/Packages/Inertia/Middleware/InertiaMiddleware";
 import {User} from "../../Models/User";
+import Environment from '@envuso/core/AppContainer/Config/Environment';
 
 export class SetInertiaSharedDataMiddleware extends InertiaMiddleware {
 
@@ -13,6 +14,7 @@ export class SetInertiaSharedDataMiddleware extends InertiaMiddleware {
 		//
 		// await super.handle(context);
 		// console.log(context.session.store().items());
+		context.inertia.share('pixabayKey', Environment.get<string>('PIXABAY_KEY'));
 	}
 
 	share(context: RequestContextContract) {
