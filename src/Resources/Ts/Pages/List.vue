@@ -1,17 +1,20 @@
 <template>
+  <Modal v-show="addingItem" @close-modal="addingItem = false">
+    <form @submit.prevent="addItem" class="mb-5">
+      <input type="text" v-model="form.title" class='w-full' />
+      <input type="text" v-model="form.list" hidden />
+      <button type="submit" hidden>Add</button>
+    </form>
+  </Modal>
   <div class="text-center">
     <div
       :style="`background-image: url(${list.cover})`"
       class="w-full bg-cover bg-center h-80 pt-40">
       <Title :title="list.title" />
-      <form @submit.prevent="addItem" class="mb-5">
-        <input type="text" v-model="form.title" />
-        <input type="text" v-model="form.list" hidden />
-        <button type="submit" hidden>Add</button>
-      </form>
     </div>
   </div>
   <div class="text-center mt-5">
+    <button class="button-success mb-5" @click="addingItem = !addingItem">Add a new item.</button>
     <ul v-if="items.length > 0">
       <li v-for="item of items" class="mb-5">
         <div class="flex flex-col w-full">
@@ -51,10 +54,11 @@ import { useForm, usePage, Link } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
 import { ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon } from '@heroicons/vue/outline';
 import { Inertia } from '@inertiajs/inertia';
+import Modal from '../Components/Modal';
 
 export default {
   name: 'List',
-  components: { Title, ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon, Link },
+  components: { Modal, Title, ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon, Link },
   layout: Home,
   props: {
     list: {
@@ -64,6 +68,10 @@ export default {
     items: {
       type: Array,
       default: [],
+    },
+    addingItem: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -95,15 +103,15 @@ export default {
         onSuccess: () => {
           console.log('deleted.');
           items.value = usePage().props.value.items;
-        }
+        },
       });
-    }
+    };
 
     return {
       form,
       addItem,
       items,
-      removeItem
+      removeItem,
     };
   },
   mounted() {
