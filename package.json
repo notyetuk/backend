@@ -2,12 +2,13 @@
   "name": "@envuso/framework",
   "version": "0.1.5-alpha.5",
   "scripts": {
-    "build": "npx mix",
-    "start": "ts-node ./src",
+    "front:build": "npx mix",
     "front:watch": "npx mix watch",
     "front:hot": "npx mix watch --hot",
     "serve": "ts-node-dev --respawn --rs --transpile-only ./src/index.ts ",
+    "build": "npm run front:build && tsc -b --clean && tsc -b",
     "run": "ts-node ./src",
+    "start": "node ./dist/index.js",
     "test": "jest"
   },
   "dependencies": {
