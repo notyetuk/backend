@@ -6,6 +6,7 @@
 /storage/sessions/
 /dist/
 .env
+.env.development
 package-lock.json
 yarn.lock
 .yalc

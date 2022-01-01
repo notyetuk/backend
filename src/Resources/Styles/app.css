@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .button {
-  @apply px-5 py-2 font-bold shadow rounded-sm outline-none
+  @apply px-5 py-2 font-bold shadow rounded-md outline-none
 }
 
 .button-primary {
@@ -16,4 +16,8 @@
 
 .button-cancel {
   @apply button bg-red-500 hover:bg-red-600 active:bg-red-700 text-white;
+}
+
+.input {
+  @apply px-4 py-2 rounded-md border border-slate-300 hover:border-slate-400 text-slate-600 focus:outline-none shadow-sm
 }
