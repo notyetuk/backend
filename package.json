@@ -8,7 +8,7 @@
     "serve": "ts-node-dev --respawn --rs --transpile-only ./src/index.ts ",
     "build": "tsc -b --clean && tsc -b",
     "run": "ts-node ./src",
-    "start": "pm2 start ts-node -- ./src",
+    "start": "npx mix && pm2 start ts-node -- ./src",
     "test": "jest"
   },
   "dependencies": {
