@@ -6,12 +6,12 @@
       <input
         type="text"
         v-model="form.title"
-        class="w-full mb-5"
+        class="w-full mb-5 input"
         placeholder="Enter your list name here." />
       <input
         type="text"
         v-model="form.image"
-        class="w-full mb-5"
+        class="w-full mb-5 input"
         placeholder="Image url. (can be your own)" />
       <input type="text" v-model="form.list" hidden />
       <button class="button-primary" type="submit">Add</button>
@@ -19,7 +19,7 @@
     <form class="mb-5" @submit.prevent="searchImage">
       <input
         type="text"
-        class="w-full"
+        class="w-full input"
         v-model="keyword.v"
         placeholder="Write keywords to find a suitable image." />
     </form>
