@@ -1,6 +1,6 @@
 <template>
   <div v-if="user.userId" class="w-full bg-white px-10 py-2">
-    <div class="w-[600px] flex items-center justify-between mx-auto">
+    <div class="w-full flex items-center justify-between mx-auto">
       <div>Hello {{ user.username }}.</div>
       <button @click="logout" class="button-plain">Logout</button>
     </div>

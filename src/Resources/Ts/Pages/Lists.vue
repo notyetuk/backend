@@ -136,7 +136,6 @@ export default {
     };
 
     const setImage = (url) => {
-      console.log(url);
       form.cover = url;
     };
 

@@ -1,7 +1,7 @@
 <template>
   <input class="input" type="text" v-model="keyword" />
   <button type="button" @click="searchImage" class="button-primary">search</button>
-  <Modal v-show="hasResults" @close-modal="hasResults = !hasResults">
+  <Modal v-show="hasResults" @close-modal="hasResults = false" class="z-10">
     <ul class="flex flex-wrap justify-between">
       <li v-for="image of imageResults" @click="setImage(image.largeImageURL)">
         <img :src="image.previewURL" alt="image" />

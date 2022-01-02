@@ -17,6 +17,7 @@ class ItemDTO extends DataTransferObject {
   list: ObjectId;
   title: string;
   image: string;
+  url: string;
 }
 
 //@middleware()
@@ -30,6 +31,7 @@ export class ItemController extends Controller {
     item.image = body.image;
     item.createdAt = new Date();
     item.user = session().store().get('user_id');
+    item.url = body.url;
     await item.save();
 
     return back();

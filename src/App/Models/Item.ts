@@ -15,5 +15,6 @@ export class Item extends Model<Item> {
     createdAt: Date;
 
     user: string;
+    url: string;
 
 }

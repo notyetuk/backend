@@ -1,50 +1,66 @@
 <template>
-  <!-- Add a new item modal -->
-  <Modal v-show="addingItem" @close-modal="addingItem = false">
-    <Title title="Adding a new item." />
-    <form @submit.prevent="addItem" class="mb-5">
-      <input
-        type="text"
-        v-model="form.title"
-        class="w-full mb-5 input"
-        placeholder="Enter your list name here." />
-      <input
-        type="text"
-        v-model="form.image"
-        class="w-full mb-5 input"
-        placeholder="Image url. (can be your own)" />
-      <input type="text" v-model="form.list" hidden />
-      <button class="button-primary" type="submit">Add</button>
-    </form>
-    <form class="mb-5" @submit.prevent="searchImage">
-      <input
-        type="text"
-        class="w-full input"
-        v-model="keyword.v"
-        placeholder="Write keywords to find a suitable image." />
-    </form>
+  <div class="text-center">
+    <div
+      :style="`background-image: url(${list.cover})`"
+      class="w-full bg-cover bg-center h-80 pt-40"
+      v-if="!addingItem">
+      <Title :title="list.title" />
+    </div>
+  </div>
+  <div class="text-center mt-5">
+    <button
+      :class="addingItem ? 'button-cancel' : 'button-success'"
+      class="mb-5"
+      @click="addingItem = !addingItem">
+      {{ !addingItem ? 'Add a new Item.' : 'Cancel' }}
+    </button>
+
+    <div v-if="addingItem">
+      <form @submit.prevent="addItem" class="mb-10 flex flex-col space-y-10 w-3/4 mx-auto">
+        <div class="space-y-2 flex flex-col">
+          <input
+            type="text"
+            v-model="form.title"
+            class="w-full input"
+            placeholder="Enter your item name here."
+            required />
+          <input
+            type="text"
+            v-model="form.url"
+            class="w-full input"
+            placeholder="Enter your item url here. (online store url)"
+            required />
+          <input
+            type="text"
+            v-model="form.image"
+            class="w-full input"
+            placeholder="Image url. (can be your own)"
+            required />
+          <input type="text" v-model="form.list" hidden />
+          <button class="button-success" type="submit">Add</button>
+        </div>
+      </form>
+      <div class="w-3/4 mx-auto mb-10">
+        <div class="flex flex-col space-y-2">
+          <div>Search for an image to represent your item or use your own.</div>
+          <ImageSearch @set-image="setImage" />
+        </div>
+      </div>
+    </div>
     <ul class="flex flex-wrap justify-between space-y-2">
       <li v-for="image of imageResults">
         <img :src="image.previewURL" alt="image" @click="setImage(image.largeImageURL)" />
       </li>
     </ul>
-  </Modal>
 
-  <div class="text-center">
-    <div
-      :style="`background-image: url(${list.cover})`"
-      class="w-full bg-cover bg-center h-80 pt-40">
-      <Title :title="list.title" />
-    </div>
-  </div>
-  <div class="text-center mt-5">
-    <button class="button-success mb-5" @click="addingItem = !addingItem">Add a new item.</button>
     <ul v-if="items.length > 0">
-      <li v-for="item of items" class="mb-5">
+      <li
+        v-for="item of items"
+        class="mb-3 text-xl border border-slate-200 rounded-md py-3 px-3 bg-white cursor-pointer hover:shadow-md ease-in-out duration-200 hover:-translate-y-[1px] relative">
         <div class="flex flex-col w-full">
           <div class="text-lg">{{ item.title }}</div>
           <div class="text-sm">{{ new Date(item.createdAt).toDateString() }}</div>
-          <button class="absolute right-0" @click="removeItem(item._id)">
+          <button class="absolute right-2 top-2" @click="removeItem(item._id)">
             <XCircleIcon class="w-5" />
           </button>
         </div>
@@ -81,10 +97,19 @@ import { Inertia } from '@inertiajs/inertia';
 import Modal from '../Components/Modal';
 import axios from 'axios';
 import { UserStore } from '../Store/UserStore';
+import ImageSearch from '../Components/ImageSearch';
 
 export default {
   name: 'List',
-  components: { Modal, Title, ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon, Link },
+  components: {
+    ImageSearch,
+    Modal,
+    Title,
+    ArrowCircleLeftIcon,
+    ArrowCircleRightIcon,
+    XCircleIcon,
+    Link,
+  },
   layout: Home,
   props: {
     list: {
@@ -131,7 +156,8 @@ export default {
     const form = useForm({
       title: null,
       list: props.list._id,
-      image: keyword.v,
+      image: null,
+      url: null,
     });
 
     const addItem = async () => {

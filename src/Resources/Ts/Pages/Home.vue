@@ -1,4 +1,5 @@
 <template>
+  <Toast v-if="showToast" :message="toastMessage" :type="toastType" @close-toast="closeToast" />
   <div v-if="!isLoggedIn" class="text-center">
     <div class="mb-10">
       <span
@@ -21,18 +22,23 @@
     </div>
     <div v-if="_login">
       <div class="text-lg mb-5">Login</div>
-      <form @submit.prevent="login" class="w-2/4 mx-auto flex flex-col space-y-2">
-        <input type="text" class="input" placeholder="Username" v-model="form.username" />
-        <input type="text" class="input" placeholder="Password" v-model="form.password" />
+      <form @submit.prevent="login" class="w-full md:w-2/4 mx-auto flex flex-col space-y-2">
+        <input type="text" class="input" placeholder="Username" v-model="form.username" required />
+        <input type="text" class="input" placeholder="Password" v-model="form.password" required />
         <button type="submit" class="button-primary">Login</button>
       </form>
     </div>
 
     <div v-if="_register">
       <div class="text-lg mb-5">Register</div>
-      <form @submit.prevent="register" class="w-2/4 mx-auto flex flex-col space-y-2">
-        <input type="text" class="input" placeholder="Username" v-model="form.username" />
-        <input type="password" class="input" placeholder="Password" v-model="form.password" />
+      <form @submit.prevent="register" class="w-full md:w-2/4 mx-auto flex flex-col space-y-2">
+        <input type="text" class="input" placeholder="Username" v-model="form.username" required />
+        <input
+          type="password"
+          class="input"
+          placeholder="Password"
+          v-model="form.password"
+          required />
         <!--      <input-->
         <!--        type="password"-->
         <!--        class="input"-->
@@ -51,15 +57,28 @@ import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { UserStore } from '../Store/UserStore';
 import Nav from '../Components/Nav';
+import Toast from '../Components/Toast';
 
 export default {
   name: 'Home',
-  components: { Nav },
+  components: { Toast, Nav },
   layout: Layout,
   props: {
     isLoggedIn: {
       type: Boolean,
       default: false,
+    },
+    showToast: {
+      type: Boolean,
+      default: false,
+    },
+    toastMessage: {
+      type: String,
+      default: '',
+    },
+    toastType: {
+      type: String,
+      default: 'info',
     },
   },
   data() {
@@ -71,6 +90,9 @@ export default {
   },
   setup(props, context) {
     const isLoggedIn = ref(props.isLoggedIn);
+    const showToast = ref(props.showToast);
+    const toastMessage = ref(props.toastMessage);
+    const toastType = ref(props.toastType);
 
     if (usePage().props.value.user) {
       isLoggedIn.value = true;
@@ -88,7 +110,9 @@ export default {
           console.log(r);
         },
         onError: (r) => {
-          console.log(r);
+          toastMessage.value = `${r[0].toUpperCase()}${r.slice(1)}`;
+          showToast.value = true;
+          toastType.value = 'error';
         },
       });
       form.reset();
@@ -103,12 +127,20 @@ export default {
       Inertia.get('/logout');
     };
 
+    const closeToast = () => {
+      showToast.value = false;
+    };
+
     return {
       form,
       login,
       register,
       isLoggedIn,
       logout,
+      showToast,
+      closeToast,
+      toastMessage,
+      toastType,
     };
   },
 };
