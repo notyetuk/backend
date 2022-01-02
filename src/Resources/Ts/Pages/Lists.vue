@@ -36,7 +36,18 @@
       <ul class="text-center">
         <li
           v-for="item of lists"
-          class="mb-3 text-xl border border-slate-400 rounded-md py-3 px-3 bg-white cursor-pointer hover:shadow-md ease-in-out duration-200 hover:-translate-y-[1px]">
+          class="mb-3 text-xl border border-slate-200 rounded-md py-3 px-3 bg-white cursor-pointer hover:shadow-md ease-in-out duration-200 hover:-translate-y-[1px] relative">
+          <div class="absolute right-3 top-2">
+            <button
+              type="button"
+              @click="
+                deleting = true;
+                selected = item._id;
+              "
+              class="outline-none">
+              <XCircleIcon class="w-4" />
+            </button>
+          </div>
           <a :href="'/list/' + item._id" class="flex align-middle items-center">
             <div class="w-1/4 mr-5">
               <img :src="item.cover" alt="image" />
@@ -53,6 +64,13 @@
       <div v-if="lists.length < 1">
         You have not created any lists yet. Go on and create a new wishlist.
       </div>
+      <Modal v-if="deleting" @close-modal="deleting = false">
+        <div class="text-lg">Do you really want to delete this list?</div>
+        <div class="flex space-x-2 justify-center mt-4">
+          <button type="button" class="button-success" @click="removeList">Yes</button>
+          <button type="button" class="button-cancel" @click="deleting = false">No</button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
@@ -64,10 +82,13 @@ import ListItem from '../Components/ListItem';
 import { useForm, usePage } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
 import ImageSearch from '../Components/ImageSearch';
+import { XCircleIcon } from '@heroicons/vue/outline';
+import { Inertia } from '@inertiajs/inertia';
+import Modal from '../Components/Modal';
 
 export default {
   name: 'Lists',
-  components: { ImageSearch, ListItem, Title },
+  components: { ImageSearch, ListItem, Title, XCircleIcon, Modal },
   layout: Home,
   props: {
     lists: {
@@ -78,6 +99,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    deleting: {
+      type: Boolean,
+      default: false,
+    },
+    selected: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {};
@@ -85,6 +114,8 @@ export default {
   setup(props, context) {
     const lists = ref(props.lists);
     const addingList = ref(props.addingList);
+    const deleting = ref(props.deleting);
+    const selected = ref(props.selected);
     const form = useForm({
       title: null,
       cover: null,
@@ -106,12 +137,24 @@ export default {
       form.cover = url;
     };
 
+    const removeList = async () => {
+      Inertia.delete(`/list/${selected.value}`, {
+        onSuccess: () => {
+          lists.value = usePage().props.value.lists;
+          deleting.value = false;
+        },
+      });
+    };
+
     return {
       form,
       lists,
       addList,
       addingList,
       setImage,
+      removeList,
+      deleting,
+      selected,
     };
   },
 };

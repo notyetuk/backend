@@ -9,6 +9,7 @@ import {
   response,
   request,
   back,
+  delete_,
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
@@ -51,7 +52,7 @@ export class ListController extends Controller {
     const items = await Item.query()
       .whereAllIn('list', [id])
       .orderByDesc('createdAt')
-      .get({limit: limit | 8, skip});
+      .get({ limit: limit | 8, skip });
     return Inertia.render('List', {
       list,
       items,
@@ -69,5 +70,12 @@ export class ListController extends Controller {
     return back();
     // return response().redirect('/list');
     // return response().json({ m: 'list added' });
+  }
+
+  @delete_('/:id')
+  async deleteList(@param id: string) {
+    await List.query().where('_id', id).delete();
+
+    return back();
   }
 }

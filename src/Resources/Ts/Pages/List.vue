@@ -53,13 +53,13 @@
     <div v-if="items.length === 0">No items on this list.</div>
 
     <div class="mb-5 mt-5 flex justify-center">
-      <div>
-        <Link v-show="this.page > 1" :href="`?page=${this.page - 1}`">
+      <div v-if="this.page > 1">
+        <Link :href="`?page=${this.page - 1}`">
           <ArrowCircleLeftIcon class="w-6" />
         </Link>
       </div>
-      <div>
-        <Link v-show="items.length > 0" :href="`?page=${this.page + 1}`">
+      <div v-show="items.length > 0">
+        <Link :href="`?page=${this.page + 1}`">
           <ArrowCircleRightIcon class="w-6" />
         </Link>
       </div>
@@ -114,6 +114,7 @@ export default {
   data() {
     return {
       page: 1,
+      pageSize: 8,
     };
   },
   setup(props, context) {
