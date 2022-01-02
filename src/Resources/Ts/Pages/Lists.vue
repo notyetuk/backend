@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import Home from '../Layouts/Home';
+import Home from '../Layouts/Layout';
 import Title from '../Components/Title';
 import ListItem from '../Components/ListItem';
 import { useForm, usePage } from '@inertiajs/inertia-vue3';
@@ -85,6 +85,7 @@ import ImageSearch from '../Components/ImageSearch';
 import { XCircleIcon } from '@heroicons/vue/outline';
 import { Inertia } from '@inertiajs/inertia';
 import Modal from '../Components/Modal';
+import { UserStore } from '../Store/UserStore';
 
 export default {
   name: 'Lists',
@@ -112,6 +113,8 @@ export default {
     return {};
   },
   setup(props, context) {
+    if (!UserStore.userId) window.location = '/';
+
     const lists = ref(props.lists);
     const addingList = ref(props.addingList);
     const deleting = ref(props.deleting);

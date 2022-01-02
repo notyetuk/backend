@@ -11,6 +11,7 @@ import {
 } from '@envuso/core/Routing';
 import { ObjectId } from 'mongodb';
 import { Item } from '../../Models/Item';
+import { session } from '@envuso/core/Session';
 
 class ItemDTO extends DataTransferObject {
   list: ObjectId;
@@ -28,17 +29,13 @@ export class ItemController extends Controller {
     item.title = body.title;
     item.image = body.image;
     item.createdAt = new Date();
+    item.user = session().store().get('user_id');
     await item.save();
 
     return back();
   }
 
-  @get('/:list')
-  async getAllFromList(@param list: string) {
-    return response().json({ m: 'some' });
-  }
-
-  @delete_('/del/:id')
+  @delete_('/:id')
   async deleteItem(@param id: string) {
     await Item.query().where('_id', id).delete();
 

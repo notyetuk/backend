@@ -14,4 +14,6 @@ export class Item extends Model<Item> {
     image: string;
     createdAt: Date;
 
+    user: string;
+
 }

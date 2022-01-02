@@ -1,19 +1,19 @@
 import {
+  back,
   Controller,
   controller,
-  get,
-  post,
-  dto,
   DataTransferObject,
-  param,
-  response,
-  request,
-  back,
   delete_,
+  dto,
+  get,
+  param,
+  post,
+  request,
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
 import { Inertia } from '@envuso/core/Packages/Inertia/Inertia';
+import { session } from '@envuso/core/Session';
 
 class ListDTO extends DataTransferObject {
   title: string;
@@ -25,12 +25,14 @@ interface Pagination {
   limit: number;
 }
 
-//@middleware()
 @controller('/list')
 export class ListController extends Controller {
   @get('/')
   async retrieveLists() {
-    const lists = await List.query().orderByDesc('createdAt').get();
+    const lists = await List.query()
+      .where('user', session().store().get('user_id'))
+      .orderByDesc('createdAt')
+      .get();
     return Inertia.render('Lists', {
       lists,
     });
@@ -50,7 +52,9 @@ export class ListController extends Controller {
 
     const list = await List.find(id);
     const items = await Item.query()
-      .whereAllIn('list', [id])
+      // .whereAllIn('list', [id])
+      // @ts-ignore
+      .where({ list: id, user: session().store().get('user_id') })
       .orderByDesc('createdAt')
       .get({ limit: limit | 8, skip });
     return Inertia.render('List', {
@@ -65,6 +69,7 @@ export class ListController extends Controller {
     list.title = body.title;
     list.cover = body.cover;
     list.createdAt = new Date();
+    list.user = session().store().get('user_id');
     await list.save();
 
     return back();

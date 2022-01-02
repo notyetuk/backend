@@ -11,5 +11,6 @@ export class List extends Model<List> {
     title: string;
     cover: string;
     createdAt: Date;
+    user: string;
 
 }

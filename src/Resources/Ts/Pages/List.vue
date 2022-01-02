@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import Home from '../Layouts/Home';
+import Home from '../Layouts/Layout';
 import Title from '../Components/Title';
 import { useForm, usePage, Link } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
@@ -80,6 +80,7 @@ import { ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon } from '@heroico
 import { Inertia } from '@inertiajs/inertia';
 import Modal from '../Components/Modal';
 import axios from 'axios';
+import { UserStore } from '../Store/UserStore';
 
 export default {
   name: 'List',
@@ -118,6 +119,8 @@ export default {
     };
   },
   setup(props, context) {
+    if (!UserStore.userId) window.location = '/';
+
     const items = ref(props.items);
     const imageResults = ref(props.imageResults);
     const showResults = ref(props.showResults);
@@ -143,7 +146,7 @@ export default {
     };
 
     const removeItem = async (id) => {
-      Inertia.delete(`/item/del/${id}`, {
+      Inertia.delete(`/item/${id}`, {
         preserveScroll: true,
         onSuccess: () => {
           console.log('deleted.');

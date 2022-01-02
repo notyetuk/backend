@@ -6,14 +6,15 @@ import Environment from '@envuso/core/AppContainer/Config/Environment';
 export class SetInertiaSharedDataMiddleware extends InertiaMiddleware {
 
 	async handle(context: RequestContextContract) {
-		// const userId = context.session.store().get<string>('user_id', null);
-		// let user     = null;
-		// if (userId) {
-		// 	user = await User.find(userId, '_id');
-		// }
-		//
-		// await super.handle(context);
-		// console.log(context.session.store().items());
+		const userId = context.session.store().get<string>('user_id', null);
+		let user     = null;
+		if (userId) {
+			user = await User.find(userId, '_id');
+		}
+
+		await super.handle(context);
+
+		context.inertia.share('user', user);
 		context.inertia.share('pixabayKey', Environment.get<string>('PIXABAY_KEY'));
 	}
 
