@@ -18,6 +18,10 @@
   @apply button bg-red-500 hover:bg-red-600 active:bg-red-700 text-white;
 }
 
+.button-plain {
+  @apply px-3 py-1 font-bold rounded-md bg-gray-200 hover:bg-gray-300 text-black text-sm
+}
+
 .input {
   @apply px-4 py-2 rounded-md border border-slate-300 hover:border-slate-400 text-slate-600 focus:outline-none shadow-sm
 }

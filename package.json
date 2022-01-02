@@ -8,11 +8,11 @@
     "serve": "ts-node-dev --respawn --rs --transpile-only ./src/index.ts ",
     "build": "tsc -b --clean && tsc -b",
     "run": "ts-node ./src",
-    "start": "npx mix --production && pm2 start ./dist/index.js",
+    "start": "npx mix --production && node ./dist/index.js",
     "test": "jest"
   },
   "dependencies": {
-    "@envuso/core": "^2.0.1",
+    "@envuso/core": "^2.0.2",
     "@headlessui/vue": "^1.4.2",
     "@heroicons/vue": "^1.0.5",
     "@tailwindcss/forms": "^0.4.0",

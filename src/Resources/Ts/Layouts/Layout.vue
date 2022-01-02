@@ -1,7 +1,7 @@
 <template>
+  <Nav />
   <div class="flex justify-center">
     <div class="w-full h-full md:w-2/3 lg:w-2/4 p-4">
-      <Nav />
       <slot />
     </div>
   </div>
