@@ -57,6 +57,11 @@ export class HomeController extends Controller {
 
   @post('/register')
   async register(@dto(false) registerDto: RegisterDTO) {
+    const _user = await User.find(registerDto.username, 'username');
+    if (_user) {
+      return back().with('errors', 'username already registered');
+    }
+
     // await registerDto.validate();
     registerDto.createdAt = new Date();
 

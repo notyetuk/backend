@@ -1,4 +1,9 @@
 <template>
+  <Toast
+    :message="toastMessage"
+    :type="toastType"
+    v-if="showToast"
+    @close-toast="showToast = false" />
   <div class="text-center">
     <div
       :style="`background-image: url(${list.cover})`"
@@ -98,10 +103,12 @@ import Modal from '../Components/Modal';
 import axios from 'axios';
 import { UserStore } from '../Store/UserStore';
 import ImageSearch from '../Components/ImageSearch';
+import Toast from '../Components/Toast';
 
 export default {
   name: 'List',
   components: {
+    Toast,
     ImageSearch,
     Modal,
     Title,
@@ -136,6 +143,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    showToast: {
+      type: Boolean,
+      default: false,
+    },
+    toastMessage: {
+      type: String,
+      default: '',
+    },
+    toastType: {
+      type: String,
+      default: 'info',
+    },
   },
   data() {
     return {
@@ -149,6 +168,9 @@ export default {
     const items = ref(props.items);
     const imageResults = ref(props.imageResults);
     const showResults = ref(props.showResults);
+    const showToast = ref(props.showToast);
+    const toastMessage = ref(props.toastMessage);
+    const toastType = ref(props.toastType);
     let keyword = {
       v: null,
     };
@@ -167,6 +189,9 @@ export default {
           form.reset();
           items.value = usePage().props.value.items;
           imageResults.value = [];
+          showToast.value = true;
+          toastType.value = 'success';
+          toastMessage.value = 'Item added to the list';
         },
       });
     };
@@ -177,6 +202,9 @@ export default {
         onSuccess: () => {
           console.log('deleted.');
           items.value = usePage().props.value.items;
+          showToast.value = true;
+          toastType.value = 'success';
+          toastMessage.value = 'Item removed from the list';
         },
       });
     };
@@ -204,6 +232,9 @@ export default {
       keyword,
       showResults,
       setImage,
+      toastMessage,
+      showToast,
+      toastType,
     };
   },
   mounted() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-5 left-5" @click="closeToast">
+  <div class="absolute top-5 left-5 cursor-pointer" @click="closeToast">
     <div
       class="px-5 py-3 bg-opacity-75 border shadow-md"
       :class="

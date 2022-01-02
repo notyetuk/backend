@@ -1,5 +1,9 @@
 <template>
-  <Toast v-if="showToast" :message="toastMessage" :type="toastType" @close-toast="closeToast" />
+  <Toast
+    v-if="showToast"
+    :message="toastMessage"
+    :type="toastType"
+    @close-toast="showToast = false" />
   <div v-if="!isLoggedIn" class="text-center">
     <div class="mb-10">
       <span
@@ -24,7 +28,12 @@
       <div class="text-lg mb-5">Login</div>
       <form @submit.prevent="login" class="w-full md:w-2/4 mx-auto flex flex-col space-y-2">
         <input type="text" class="input" placeholder="Username" v-model="form.username" required />
-        <input type="text" class="input" placeholder="Password" v-model="form.password" required />
+        <input
+          type="password"
+          class="input"
+          placeholder="Password"
+          v-model="form.password"
+          required />
         <button type="submit" class="button-primary">Login</button>
       </form>
     </div>
@@ -119,16 +128,18 @@ export default {
     };
 
     const register = async () => {
-      form.post('/register');
+      form.post('/register', {
+        onError: (r) => {
+          toastMessage.value = `${r[0].toUpperCase()}${r.slice(1)}`;
+          showToast.value = true;
+          toastType.value = 'error';
+        },
+      });
       form.reset();
     };
 
     const logout = async () => {
       Inertia.get('/logout');
-    };
-
-    const closeToast = () => {
-      showToast.value = false;
     };
 
     return {
@@ -138,7 +149,6 @@ export default {
       isLoggedIn,
       logout,
       showToast,
-      closeToast,
       toastMessage,
       toastType,
     };
