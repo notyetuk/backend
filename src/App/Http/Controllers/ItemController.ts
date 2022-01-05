@@ -7,7 +7,8 @@ import {
   DataTransferObject,
   response,
   back,
-  param, delete_,
+  param,
+  delete_,
 } from '@envuso/core/Routing';
 import { ObjectId } from 'mongodb';
 import { Item } from '../../Models/Item';
@@ -34,13 +35,15 @@ export class ItemController extends Controller {
     item.url = body.url;
     await item.save();
 
-    return back();
+    // return back();
+    return response().json({ message: 'item added' }, 200);
   }
 
   @delete_('/:id')
   async deleteItem(@param id: string) {
     await Item.query().where('_id', id).delete();
 
-    return back();
+    // return back();
+    return response().json({ message: 'item deleted' }, 200);
   }
 }

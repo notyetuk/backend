@@ -9,6 +9,7 @@ import {
   param,
   post,
   request,
+  response,
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
@@ -27,16 +28,19 @@ interface Pagination {
 
 @controller('/list')
 export class ListController extends Controller {
-  @get('/')
-  async retrieveLists() {
-    const lists = await List.query()
-      .where('user', session().store().get('user_id'))
-      .orderByDesc('createdAt')
-      .get();
-    return Inertia.render('Lists', {
-      lists,
-    });
-  }
+  // @get('/')
+  // async retrieveLists() {
+  //   const lists = await List.query()
+  //     .where('user', session().store().get('user_id'))
+  //     .orderByDesc('createdAt')
+  //     .get();
+  //   // return Inertia.render('Lists', {
+  //   //   lists,
+  //   // });
+  //   return response().json({
+  //     message: ''
+  //   })
+  // }
 
   @get('/:id')
   async retrieveList(@param id: string) {
@@ -57,10 +61,11 @@ export class ListController extends Controller {
       .where({ list: id, user: session().store().get('user_id') })
       .orderByDesc('createdAt')
       .get({ limit: limit | 8, skip });
-    return Inertia.render('List', {
-      list,
-      items,
-    });
+    // return Inertia.render('List', {
+    //   list,
+    //   items,
+    // });
+    return response().json({ list, items }, 200);
   }
 
   @post('/')
@@ -72,15 +77,16 @@ export class ListController extends Controller {
     list.user = session().store().get('user_id');
     await list.save();
 
-    return back();
+    // return back();
     // return response().redirect('/list');
-    // return response().json({ m: 'list added' });
+    return response().json({ message: 'list added' }, 200);
   }
 
   @delete_('/:id')
   async deleteList(@param id: string) {
     await List.query().where('_id', id).delete();
 
-    return back();
+    // return back();
+    return response().json({ message: 'list deleted' }, 200);
   }
 }

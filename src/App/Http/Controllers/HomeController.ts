@@ -26,40 +26,37 @@ class RegisterDTO extends DataTransferObject {
 }
 
 // @middleware()
-@controller('/')
+@controller('/auth')
 export class HomeController extends Controller {
-  @get('/')
-  public async index() {
-    // return response().redirect('/list');
-    return Inertia.render('Home', {});
-  }
-
   @post('/login')
   async doLogin(@dto(false) loginDto: LoginDTO) {
     if (!loginDto.username || !loginDto.password) {
-      return back().with('errors', 'enter all details');
+      return response().json({ message: 'fill all details' }, 401);
     }
 
     const _user = await User.find(loginDto.username, 'username');
 
     if (!_user) {
-      return back().with('errors', 'user not found');
+      return response().json({ message: 'user not found' }, 401);
     }
 
     if (!Hash.check(loginDto.password, _user.password)) {
-      return back().with('errors', 'wrong password');
+      return response().json({ message: 'wrong password' }, 401);
     }
 
-    Auth.authoriseAs(_user);
-
-    return Inertia.location('/list');
+    // Auth.authoriseAs(_user);
+    return response().json({ message: 'logged in' }, 200);
   }
 
   @post('/register')
   async register(@dto(false) registerDto: RegisterDTO) {
+    if (!registerDto.username || !registerDto.password) {
+      return response().json({ message: 'fill all details' }, 401);
+    }
+
     const _user = await User.find(registerDto.username, 'username');
     if (_user) {
-      return back().with('errors', 'username already registered');
+      return response().json({ message: 'username already exists' }, 200);
     }
 
     // await registerDto.validate();
@@ -71,13 +68,13 @@ export class HomeController extends Controller {
     user.createdAt = registerDto.createdAt;
     await user.save();
 
-    return Inertia.location('/');
+    return response().json({ message: 'registered' }, 200);
   }
 
   @get('/logout')
   async logout() {
     await request().session().invalidate();
 
-    return Inertia.location('/');
+    return response().json({ message: 'logged out' }, 200);
   }
 }
