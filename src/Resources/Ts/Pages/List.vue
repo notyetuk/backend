@@ -223,6 +223,7 @@ export default {
 
     const removeItem = async (id) => {
       Inertia.delete(`/item/d?list=${props.list._id}&id=${id}`, {
+      // Inertia.delete(`/item/d/${props.list._id}/${id}`, {
         preserveScroll: true,
         onSuccess: () => {
           items.value = usePage().props.value.items;

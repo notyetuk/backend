@@ -57,11 +57,16 @@
       </form>
     </div>
   </div>
+  <div v-if="isLoggedIn">
+    <Link href="/list">
+      <button class="button-primary">See my Lists</button>
+    </Link>
+  </div>
 </template>
 
 <script>
 import Layout from '../Layouts/Layout';
-import { useForm, usePage } from '@inertiajs/inertia-vue3';
+import { useForm, usePage, Link } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { UserStore } from '../Store/UserStore';
@@ -70,7 +75,7 @@ import Toast from '../Components/Toast';
 
 export default {
   name: 'Home',
-  components: { Toast, Nav },
+  components: { Toast, Nav, Link },
   layout: Layout,
   props: {
     isLoggedIn: {
