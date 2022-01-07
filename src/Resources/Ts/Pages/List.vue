@@ -62,13 +62,20 @@
       <li
         v-for="item of items"
         class="mb-3 text-xl border border-slate-200 rounded-md py-3 px-3 bg-white cursor-pointer hover:shadow-md ease-in-out duration-200 hover:-translate-y-[1px] relative">
-        <div class="flex flex-col w-full">
-          <div class="text-lg">{{ item.title }}</div>
-          <div class="text-sm">{{ new Date(item.createdAt).toDateString() }}</div>
-          <button class="absolute right-2 top-2" @click="removeItem(item._id)">
-            <XCircleIcon class="w-5" />
-          </button>
-        </div>
+        <a :href="item.url" target="_blank">
+          <div class="flex w-full">
+            <div class="w-1/4 mr-5">
+              <img :src="item.image" alt="item image" />
+            </div>
+            <div class="flex flex-col text-left">
+              <div class="text-lg">{{ item.title }}</div>
+              <div class="text-sm">Added on {{ new Date(item.createdAt).toDateString() }}</div>
+              <button class="absolute right-2 top-2" @click="removeItem(item._id)">
+                <XCircleIcon class="w-5" />
+              </button>
+            </div>
+          </div>
+        </a>
       </li>
     </ul>
     <div v-if="items.length === 0">No items on this list.</div>
