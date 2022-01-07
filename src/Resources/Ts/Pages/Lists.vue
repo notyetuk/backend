@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Your lists.</title>
+  </Head>
   <div>
     <Title title="Your wishlists." />
     <div class="text-center">
@@ -79,7 +82,7 @@
 import Home from '../Layouts/Layout';
 import Title from '../Components/Title';
 import ListItem from '../Components/ListItem';
-import { useForm, usePage } from '@inertiajs/inertia-vue3';
+import { useForm, usePage, Head } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
 import ImageSearch from '../Components/ImageSearch';
 import { XCircleIcon } from '@heroicons/vue/outline';
@@ -89,7 +92,7 @@ import { UserStore } from '../Store/UserStore';
 
 export default {
   name: 'Lists',
-  components: { ImageSearch, ListItem, Title, XCircleIcon, Modal },
+  components: { ImageSearch, ListItem, Title, XCircleIcon, Modal, Head },
   layout: Home,
   props: {
     lists: {

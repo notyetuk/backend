@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>{{ list.title }}</title>
+  </Head>
   <Toast
     :message="toastMessage"
     :type="toastType"
@@ -108,7 +111,7 @@
 <script>
 import Home from '../Layouts/Layout';
 import Title from '../Components/Title';
-import { useForm, usePage, Link } from '@inertiajs/inertia-vue3';
+import { useForm, usePage, Link, Head } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
 import { ArrowCircleLeftIcon, ArrowCircleRightIcon, XCircleIcon } from '@heroicons/vue/outline';
 import { Inertia } from '@inertiajs/inertia';
@@ -131,6 +134,7 @@ export default {
     ArrowCircleRightIcon,
     XCircleIcon,
     Link,
+    Head,
   },
   layout: Home,
   props: {
@@ -223,7 +227,7 @@ export default {
 
     const removeItem = async (id) => {
       Inertia.delete(`/item/d?list=${props.list._id}&id=${id}`, {
-      // Inertia.delete(`/item/d/${props.list._id}/${id}`, {
+        // Inertia.delete(`/item/d/${props.list._id}/${id}`, {
         preserveScroll: true,
         onSuccess: () => {
           items.value = usePage().props.value.items;
