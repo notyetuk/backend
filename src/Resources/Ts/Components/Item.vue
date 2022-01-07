@@ -1,9 +1,16 @@
 <template>
-  <div>
-    {{ item.title }}<br />
-    {{ item.url }}<br />
-    {{ item.createdAt }}<br /><br />
-    <button class="button-cancel" type="button" @click="removeItem">Delete</button>
+  <div class='flex-col space-y-5'>
+    <div class='text-2xl'>{{ item.title }}</div>
+    <div>
+      <img :src='item.image' alt='item image' />
+    </div>
+    <div>
+      Added on {{item.createdAt}}
+    </div>
+    <div class="flex space-x-2">
+      <a :href="item.url" target="_blank" class="button-primary cursor-pointer">Visit</a>
+      <button class="button-cancel" type="button" @click="removeItem">Delete</button>
+    </div>
   </div>
 </template>
 
