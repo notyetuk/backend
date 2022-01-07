@@ -5,7 +5,7 @@
       <img :src='item.image' alt='item image' />
     </div>
     <div>
-      Added on {{item.createdAt}}
+      Added on {{new Date(item.createdAt).toDateString()}}
     </div>
     <div class="flex space-x-2">
       <a :href="item.url" target="_blank" class="button-primary cursor-pointer">Visit</a>
