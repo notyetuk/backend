@@ -5,12 +5,13 @@
     v-if="showToast"
     @close-toast="showToast = false" />
   <div class="text-center">
-    <div
-      :style="`background-image: url(${list.cover})`"
-      class="w-full bg-cover bg-center h-80 pt-40"
-      v-if="!addingItem">
-      <Title :title="list.title" />
-    </div>
+    <!--    <div-->
+    <!--      :style="`background-image: url(${list.cover})`"-->
+    <!--      class="w-full bg-cover bg-center h-80 pt-40"-->
+    <!--      v-if="!addingItem">-->
+    <!--      <Title :title="list.title" />-->
+    <!--    </div>-->
+    <Title :title="list.title" />
   </div>
   <div class="text-center mt-5">
     <button
@@ -61,24 +62,29 @@
     <ul v-if="items.length > 0">
       <li
         v-for="item of items"
-        class="mb-3 text-xl border border-slate-200 rounded-md py-3 px-3 bg-white cursor-pointer hover:shadow-md ease-in-out duration-200 hover:-translate-y-[1px] relative">
-        <a :href="item.url" target="_blank">
-          <div class="flex w-full">
-            <div class="w-1/4 mr-5">
-              <img :src="item.image" alt="item image" />
-            </div>
-            <div class="flex flex-col text-left">
-              <div class="text-lg">{{ item.title }}</div>
-              <div class="text-sm">Added on {{ new Date(item.createdAt).toDateString() }}</div>
-              <button class="absolute right-2 top-2" @click="removeItem(item._id)">
-                <XCircleIcon class="w-5" />
-              </button>
-            </div>
+        class="mb-3 text-xl border border-slate-200 rounded-md py-3 px-3 bg-white cursor-pointer hover:shadow-md ease-in-out duration-200 hover:-translate-y-[1px] relative"
+        @click="setItem(item)">
+        <!--        <a :href="item.url" target="_blank">-->
+        <div class="flex w-full">
+          <div class="w-1/4 mr-5">
+            <img :src="item.image" alt="item image" />
           </div>
-        </a>
+          <div class="flex flex-col text-left">
+            <div class="text-lg">{{ item.title }}</div>
+            <div class="text-sm">Added on {{ new Date(item.createdAt).toDateString() }}</div>
+            <!--            <button class="absolute right-2 top-2" @click="removeItem(item._id)">-->
+            <!--              <XCircleIcon class="w-5" />-->
+            <!--            </button>-->
+          </div>
+        </div>
+        <!--        </a>-->
       </li>
     </ul>
     <div v-if="items.length === 0">No items on this list.</div>
+
+    <Modal v-if="showItem" @close-modal="showItem = false">
+      <Item :item="currentItem.value" @remove-item="removeItem(currentItem.value._id)" />
+    </Modal>
 
     <div class="mb-5 mt-5 flex justify-center">
       <div v-if="this.page > 1">
@@ -111,10 +117,12 @@ import axios from 'axios';
 import { UserStore } from '../Store/UserStore';
 import ImageSearch from '../Components/ImageSearch';
 import Toast from '../Components/Toast';
+import Item from '../Components/Item';
 
 export default {
   name: 'List',
   components: {
+    Item,
     Toast,
     ImageSearch,
     Modal,
@@ -162,6 +170,14 @@ export default {
       type: String,
       default: 'info',
     },
+    showItem: {
+      type: Boolean,
+      default: false,
+    },
+    currentItem: {
+      type: Object,
+      default: {},
+    },
   },
   data() {
     return {
@@ -181,6 +197,8 @@ export default {
     let keyword = {
       v: null,
     };
+    const showItem = ref(props.showItem);
+    const currentItem = {};
 
     const form = useForm({
       title: null,
@@ -204,10 +222,9 @@ export default {
     };
 
     const removeItem = async (id) => {
-      Inertia.delete(`/item/${id}`, {
+      Inertia.delete(`/item/d?list=${props.list._id}&id=${id}`, {
         preserveScroll: true,
         onSuccess: () => {
-          console.log('deleted.');
           items.value = usePage().props.value.items;
           showToast.value = true;
           toastType.value = 'success';
@@ -229,6 +246,11 @@ export default {
       form.image = url;
     };
 
+    const setItem = (item) => {
+      showItem.value = true;
+      currentItem.value = item;
+    };
+
     return {
       form,
       addItem,
@@ -242,6 +264,9 @@ export default {
       toastMessage,
       showToast,
       toastType,
+      showItem,
+      setItem,
+      currentItem,
     };
   },
   mounted() {
