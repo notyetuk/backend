@@ -21,6 +21,7 @@ class LoginDTO extends DataTransferObject {
 
 class RegisterDTO extends DataTransferObject {
   username: string;
+  email: string;
   password: string;
   createdAt: Date;
 }
@@ -72,7 +73,12 @@ export class HomeController extends Controller {
 
     const _user = await User.find(registerDto.username, 'username');
     if (_user) {
-      return response().json({ message: 'username already exists' }, 200);
+      return response().json({ message: 'username already exists' }, 401);
+    }
+
+    const _email = await User.find(registerDto.email, 'email');
+    if (_email) {
+      return response().json({ message: 'email already exists' }, 401);
     }
 
     // await registerDto.validate();
