@@ -1,11 +1,12 @@
 import {
-  back,
+  context,
   Controller,
   controller,
   DataTransferObject,
   delete_,
   dto,
   get,
+  middleware,
   param,
   post,
   request,
@@ -13,8 +14,8 @@ import {
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
-import { Inertia } from '@envuso/core/Packages/Inertia/Inertia';
 import { session } from '@envuso/core/Session';
+import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 
 class ListDTO extends DataTransferObject {
   title: string;
@@ -26,21 +27,18 @@ interface Pagination {
   limit: number;
 }
 
+@middleware(new JwtMiddleware())
 @controller('/list')
 export class ListController extends Controller {
-  // @get('/')
-  // async retrieveLists() {
-  //   const lists = await List.query()
-  //     .where('user', session().store().get('user_id'))
-  //     .orderByDesc('createdAt')
-  //     .get();
-  //   // return Inertia.render('Lists', {
-  //   //   lists,
-  //   // });
-  //   return response().json({
-  //     message: ''
-  //   })
-  // }
+  @get('/')
+  async retrieveLists() {
+    const id = context().getAdditional<string>('id');
+    const lists = await List.query().where('user', id).orderByDesc('createdAt').get();
+
+    return response().json({
+      lists,
+    });
+  }
 
   @get('/:id')
   async retrieveList(@param id: string) {
@@ -58,13 +56,10 @@ export class ListController extends Controller {
     const items = await Item.query()
       // .whereAllIn('list', [id])
       // @ts-ignore
-      .where({ list: id, user: session().store().get('user_id') })
+      .where({ list: id, user: context().getAdditional<string>('id') })
       .orderByDesc('createdAt')
       .get({ limit: limit | 8, skip });
-    // return Inertia.render('List', {
-    //   list,
-    //   items,
-    // });
+
     return response().json({ list, items }, 200);
   }
 
@@ -74,19 +69,16 @@ export class ListController extends Controller {
     list.title = body.title;
     list.cover = body.cover;
     list.createdAt = new Date();
-    list.user = session().store().get('user_id');
+    list.user = context().getAdditional<string>('id');
     await list.save();
 
-    // return back();
-    // return response().redirect('/list');
-    return response().json({ message: 'list added' }, 200);
+    return response().json({ message: 'list added', list }, 200);
   }
 
   @delete_('/:id')
   async deleteList(@param id: string) {
     await List.query().where('_id', id).delete();
 
-    // return back();
     return response().json({ message: 'list deleted' }, 200);
   }
 }

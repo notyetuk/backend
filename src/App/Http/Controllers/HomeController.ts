@@ -33,10 +33,11 @@ export class HomeController extends Controller {
     const token = request().get<string>('token');
 
     if (token) {
+      // @ts-ignore
       const { id } = await verify(token, Environment.get<string>('APP_KEY'));
       const { username } = await User.find(id);
 
-      return response().json({ username });
+      return response().json({ id, username });
     }
   }
 

@@ -8,11 +8,11 @@ import {
   response,
   back,
   param,
-  delete_,
+  delete_, context, middleware
 } from '@envuso/core/Routing';
 import { ObjectId } from 'mongodb';
 import { Item } from '../../Models/Item';
-import { session } from '@envuso/core/Session';
+import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 
 class ItemDTO extends DataTransferObject {
   list: ObjectId;
@@ -21,7 +21,7 @@ class ItemDTO extends DataTransferObject {
   url: string;
 }
 
-//@middleware()
+@middleware(new JwtMiddleware())
 @controller('/item')
 export class ItemController extends Controller {
   @post('/')
@@ -31,19 +31,17 @@ export class ItemController extends Controller {
     item.title = body.title;
     item.image = body.image;
     item.createdAt = new Date();
-    item.user = session().store().get('user_id');
+    item.user = context().getAdditional<string>('id');
     item.url = body.url;
     await item.save();
 
-    // return back();
-    return response().json({ message: 'item added' }, 200);
+    return response().json({ message: 'item added', item }, 200);
   }
 
   @delete_('/:id')
   async deleteItem(@param id: string) {
     await Item.query().where('_id', id).delete();
 
-    // return back();
     return response().json({ message: 'item deleted' }, 200);
   }
 }
