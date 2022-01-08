@@ -1,4 +1,4 @@
-import { Inertia } from '@envuso/core/Packages/Inertia/Inertia';
+import { verify } from 'jsonwebtoken';
 import {
   Controller,
   controller,
@@ -7,12 +7,12 @@ import {
   dto,
   response,
   DataTransferObject,
-  back,
+  param,
   request,
 } from '@envuso/core/Routing';
-import { Auth } from '@envuso/core/Authentication';
 import { User } from '../../Models/User';
 import { Hash } from '@envuso/core/Crypt';
+import Environment from '@envuso/core/AppContainer/Config/Environment';
 
 class LoginDTO extends DataTransferObject {
   username: string;
@@ -28,6 +28,18 @@ class RegisterDTO extends DataTransferObject {
 // @middleware()
 @controller('/auth')
 export class HomeController extends Controller {
+  @post('/verify')
+  async authenticate() {
+    const token = request().get<string>('token');
+
+    if (token) {
+      const { id } = await verify(token, Environment.get<string>('APP_KEY'));
+      const { username } = await User.find(id);
+
+      return response().json({ username });
+    }
+  }
+
   @post('/login')
   async doLogin(@dto(false) loginDto: LoginDTO) {
     if (!loginDto.username || !loginDto.password) {
@@ -45,7 +57,10 @@ export class HomeController extends Controller {
     }
 
     // Auth.authoriseAs(_user);
-    return response().json({ message: 'logged in' }, 200);
+    return response().json(
+      { token: _user.generateToken(), username: _user.username, message: 'logged in' },
+      200
+    );
   }
 
   @post('/register')
