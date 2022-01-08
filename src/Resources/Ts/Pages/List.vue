@@ -86,7 +86,7 @@
     <div v-if="items.length === 0">No items on this list.</div>
 
     <Modal v-if="showItem" @close-modal="showItem = false">
-      <Item :item="currentItem.value" @remove-item="removeItem(currentItem.value._id)" />
+      <Item :item="currentItem.value" @remove-item="removeItem(currentItem.value._id)" @close-modal="showItem = false" />
     </Modal>
 
     <div class="mb-5 mt-5 flex justify-center">
