@@ -39,10 +39,11 @@ export class ItemController extends Controller {
     return back();
   }
 
-  @delete_('/d')
+  @delete_('/:list/:id')
   async deleteItem() {
-    const id = request().get<string>('id');
-    const list = request().get<string>('list');
+    // const id = request().get<string>('id');
+    // const list = request().get<string>('list');
+    const { list, id } = request().params().all();
     await Item.query().where('_id', id).delete();
 
     return Inertia.location(`/list/${list}`);
