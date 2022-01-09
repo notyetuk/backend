@@ -12,5 +12,6 @@ export class List extends Model<List> {
     cover: string;
     createdAt: Date;
     user: string;
+    total?: number;
 
 }

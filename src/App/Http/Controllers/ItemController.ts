@@ -8,6 +8,7 @@ import {
   response,
   back,
   param,
+  put,
   delete_, context, middleware
 } from '@envuso/core/Routing';
 import { ObjectId } from 'mongodb';
@@ -17,6 +18,7 @@ import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 class ItemDTO extends DataTransferObject {
   list: ObjectId;
   title: string;
+  price: number;
   image: string;
   url: string;
 }
@@ -29,6 +31,7 @@ export class ItemController extends Controller {
     const item = new Item();
     item.list = body.list;
     item.title = body.title;
+    item.price = parseInt(String(body.price));
     item.image = body.image;
     item.createdAt = new Date();
     item.user = context().getAdditional<string>('id');

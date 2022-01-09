@@ -9,12 +9,12 @@ import {
   middleware,
   param,
   post,
+  put,
   request,
   response,
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
-import { session } from '@envuso/core/Session';
 import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 
 class ListDTO extends DataTransferObject {
@@ -30,13 +30,57 @@ interface Pagination {
 @middleware(new JwtMiddleware())
 @controller('/list')
 export class ListController extends Controller {
+  lists: any[] = [];
+
   @get('/')
   async retrieveLists() {
     const id = context().getAdditional<string>('id');
-    const lists = await List.query().where('user', id).orderByDesc('createdAt').get();
+    const userLists = await List.query().where('user', id).orderByDesc('createdAt').get();
+    await this.aggregateTotal(userLists);
 
     return response().json({
-      lists,
+      lists: this.lists,
+    });
+  }
+  async aggregateTotal(userLists: List[]): Promise<null> {
+    return new Promise((resolve) => {
+      userLists.forEach(async (l) => {
+        await List.getCollection()
+          .aggregate([
+            {
+              $match: {
+                _id: l._id,
+              },
+            },
+            {
+              $addFields: {
+                list: l._id.toString(),
+              },
+            },
+            {
+              $lookup: {
+                from: 'items',
+                localField: 'list',
+                foreignField: 'list',
+                as: 'items',
+              },
+            },
+            {
+              $addFields: {
+                total: {
+                  $sum: '$items.price',
+                },
+              },
+            },
+          ])
+          .forEach((l) => {
+            this.lists.push(l);
+          });
+        if (userLists.length === this.lists.length) {
+          this.lists.sort((a, b) => b.createdAt - a.createdAt);
+          resolve(null);
+        }
+      });
     });
   }
 
@@ -73,6 +117,20 @@ export class ListController extends Controller {
     await list.save();
 
     return response().json({ message: 'list added', list }, 200);
+  }
+
+  @put('/:id')
+  async updateList() {
+    const { id } = request().params().all();
+    const { editTitle, editCover } = request().body();
+
+    await List.query().where('_id', id).update({
+      title: editTitle,
+      cover: editCover,
+    });
+    const list = await List.query().where('_id', id).get();
+
+    return response().json({ list, message: 'list updated' }, 200);
   }
 
   @delete_('/:id')
