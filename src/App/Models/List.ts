@@ -1,4 +1,3 @@
-
 import { Exclude, Expose, Type } from "class-transformer";
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { id, Model } from "@envuso/core/Database";
@@ -13,5 +12,6 @@ export class List extends Model<List> {
     createdAt: Date;
     user: string;
     total?: number;
+    isPrivate: boolean = true;
 
 }

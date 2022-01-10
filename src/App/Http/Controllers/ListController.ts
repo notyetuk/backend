@@ -133,6 +133,19 @@ export class ListController extends Controller {
     return response().json({ list, message: 'list updated' }, 200);
   }
 
+  @put('/privacy/:id')
+  async makePublic() {
+    const { id } = request().params().all();
+    const { isPrivate } = request().body();
+
+    await List.query().where('_id', id).update({
+      isPrivate: isPrivate,
+    });
+    const list = await List.query().where('_id', id).get();
+
+    return response().json({ list, message: 'list updated' }, 200);
+  }
+
   @delete_('/:id')
   async deleteList(@param id: string) {
     await List.query().where('_id', id).delete();
