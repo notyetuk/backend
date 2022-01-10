@@ -9,7 +9,10 @@ import {
   back,
   param,
   put,
-  delete_, context, middleware
+  delete_,
+  context,
+  middleware,
+  request,
 } from '@envuso/core/Routing';
 import { ObjectId } from 'mongodb';
 import { Item } from '../../Models/Item';
@@ -39,6 +42,33 @@ export class ItemController extends Controller {
     await item.save();
 
     return response().json({ message: 'item added', item }, 200);
+  }
+
+  @put('/save/:id')
+  async saveItem() {
+    const userId = context().getAdditional('id');
+    const body = request().body<any>();
+
+    await Item.query()
+      .where({
+        user: userId,
+        _id: body.id,
+      })
+      .update({
+        title: body.title,
+        image: body.image,
+        url: body.url,
+        price: parseInt(String(body.price)),
+      });
+
+    const item = await Item.query()
+      .where({
+        user: userId,
+        _id: body.id,
+      })
+      .get();
+
+    return response().json({ item, message: 'item updated' }, 200);
   }
 
   @delete_('/:id')
