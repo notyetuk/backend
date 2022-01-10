@@ -36,11 +36,18 @@ export class ListController extends Controller {
   async retrieveLists() {
     const id = context().getAdditional<string>('id');
     const userLists = await List.query().where('user', id).orderByDesc('createdAt').get();
+    if (userLists.length === 0) {
+      return response().json({ lists: this.lists }, 200);
+    }
+
     await this.aggregateTotal(userLists);
 
-    return response().json({
-      lists: this.lists,
-    });
+    return response().json(
+      {
+        lists: this.lists,
+      },
+      200
+    );
   }
   async aggregateTotal(userLists: List[]): Promise<null> {
     return new Promise((resolve) => {
