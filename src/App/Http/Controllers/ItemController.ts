@@ -78,10 +78,6 @@ export class ItemController extends Controller {
     const { list, id } = request().params().all();
     await Item.query().where('_id', id).delete();
 
-<<<<<<< HEAD
-    return Inertia.location(`/list/${list}`);
-=======
     return response().json({ message: 'item deleted' }, 200);
->>>>>>> 584e4689b520a76a94d02ee787451524c52716c9
   }
 }
