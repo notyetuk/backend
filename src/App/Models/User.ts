@@ -9,6 +9,7 @@ export class User extends Authenticatable<User> {
   _id: ObjectId;
 
   username: string;
+  email: string;
   password: string;
 
   createdAt: Date;

@@ -1,19 +1,21 @@
 import {
-  back,
+  context,
   Controller,
   controller,
   DataTransferObject,
   delete_,
   dto,
   get,
+  middleware,
   param,
   post,
+  put,
   request,
+  response,
 } from '@envuso/core/Routing';
 import { List } from '../../Models/List';
 import { Item } from '../../Models/Item';
-import { Inertia } from '@envuso/core/Packages/Inertia/Inertia';
-import { session } from '@envuso/core/Session';
+import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 
 class ListDTO extends DataTransferObject {
   title: string;
@@ -25,16 +27,67 @@ interface Pagination {
   limit: number;
 }
 
+@middleware(new JwtMiddleware())
 @controller('/list')
 export class ListController extends Controller {
+  lists: any[] = [];
+
   @get('/')
   async retrieveLists() {
-    const lists = await List.query()
-      .where('user', session().store().get('user_id'))
-      .orderByDesc('createdAt')
-      .get();
-    return Inertia.render('Lists', {
-      lists,
+    const id = context().getAdditional<string>('id');
+    const userLists = await List.query().where('user', id).orderByDesc('createdAt').get();
+    if (userLists.length === 0) {
+      return response().json({ lists: this.lists }, 200);
+    }
+
+    await this.aggregateTotal(userLists);
+
+    return response().json(
+      {
+        lists: this.lists,
+      },
+      200
+    );
+  }
+  async aggregateTotal(userLists: List[]): Promise<null> {
+    return new Promise((resolve) => {
+      userLists.forEach(async (l) => {
+        await List.getCollection()
+          .aggregate([
+            {
+              $match: {
+                _id: l._id,
+              },
+            },
+            {
+              $addFields: {
+                list: l._id.toString(),
+              },
+            },
+            {
+              $lookup: {
+                from: 'items',
+                localField: 'list',
+                foreignField: 'list',
+                as: 'items',
+              },
+            },
+            {
+              $addFields: {
+                total: {
+                  $sum: '$items.price',
+                },
+              },
+            },
+          ])
+          .forEach((l) => {
+            this.lists.push(l);
+          });
+        if (userLists.length === this.lists.length) {
+          this.lists.sort((a, b) => b.createdAt - a.createdAt);
+          resolve(null);
+        }
+      });
     });
   }
 
@@ -54,13 +107,11 @@ export class ListController extends Controller {
     const items = await Item.query()
       // .whereAllIn('list', [id])
       // @ts-ignore
-      .where({ list: id, user: session().store().get('user_id') })
+      .where({ list: id, user: context().getAdditional<string>('id') })
       .orderByDesc('createdAt')
       .get({ limit: limit | 8, skip });
-    return Inertia.render('List', {
-      list,
-      items,
-    });
+
+    return response().json({ list, items }, 200);
   }
 
   @post('/')
@@ -69,18 +120,43 @@ export class ListController extends Controller {
     list.title = body.title;
     list.cover = body.cover;
     list.createdAt = new Date();
-    list.user = session().store().get('user_id');
+    list.user = context().getAdditional<string>('id');
     await list.save();
 
-    return back();
-    // return response().redirect('/list');
-    // return response().json({ m: 'list added' });
+    return response().json({ message: 'list added', list }, 200);
+  }
+
+  @put('/:id')
+  async updateList() {
+    const { id } = request().params().all();
+    const { editTitle, editCover } = request().body();
+
+    await List.query().where('_id', id).update({
+      title: editTitle,
+      cover: editCover,
+    });
+    const list = await List.query().where('_id', id).get();
+
+    return response().json({ list, message: 'list updated' }, 200);
+  }
+
+  @put('/privacy/:id')
+  async makePublic() {
+    const { id } = request().params().all();
+    const { isPrivate } = request().body();
+
+    await List.query().where('_id', id).update({
+      isPrivate: isPrivate,
+    });
+    const list = await List.query().where('_id', id).get();
+
+    return response().json({ list, message: 'list updated' }, 200);
   }
 
   @delete_('/:id')
   async deleteList(@param id: string) {
     await List.query().where('_id', id).delete();
 
-    return back();
+    return response().json({ message: 'list deleted' }, 200);
   }
 }
