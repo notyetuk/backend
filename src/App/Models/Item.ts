@@ -2,7 +2,7 @@
 import { Exclude, Expose, Type } from "class-transformer";
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { id, Model } from "@envuso/core/Database";
-import { ObjectId } from "mongodb";
+import { Double, ObjectId } from "mongodb";
 
 export class Item extends Model<Item> {
 

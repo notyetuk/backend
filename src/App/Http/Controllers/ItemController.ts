@@ -14,7 +14,7 @@ import {
   middleware,
   request,
 } from '@envuso/core/Routing';
-import { ObjectId } from 'mongodb';
+import { Double, ObjectId } from 'mongodb';
 import { Item } from '../../Models/Item';
 import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 
@@ -34,7 +34,7 @@ export class ItemController extends Controller {
     const item = new Item();
     item.list = body.list;
     item.title = body.title;
-    item.price = parseInt(String(body.price));
+    item.price = parseFloat(String(body.price));
     item.image = body.image;
     item.createdAt = new Date();
     item.user = context().getAdditional<string>('id');
@@ -58,7 +58,7 @@ export class ItemController extends Controller {
         title: body.title,
         image: body.image,
         url: body.url,
-        price: parseInt(String(body.price)),
+        price: parseFloat(String(body.price)),
       });
 
     const item = await Item.query()
@@ -71,11 +71,11 @@ export class ItemController extends Controller {
     return response().json({ item, message: 'item updated' }, 200);
   }
 
-  @delete_('/:list/:id')
+  @delete_('/:id')
   async deleteItem() {
     // const id = request().get<string>('id');
     // const list = request().get<string>('list');
-    const { list, id } = request().params().all();
+    const { id } = request().params().all();
     await Item.query().where('_id', id).delete();
 
     return response().json({ message: 'item deleted' }, 200);
