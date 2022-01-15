@@ -35,9 +35,13 @@ export class HomeController extends Controller {
 
     if (token) {
       // @ts-ignore
-      const { id } = await verify(token, Environment.get<string>('APP_KEY'));
-      const { username } = await User.find(id);
+      const { id, exp } = await verify(token, Environment.get<string>('APP_KEY'));
 
+      if (exp > Date.now()) {
+        return response().json({ m: 'expired' }, 401);
+      }
+
+      const { username } = await User.find(id);
       return response().json({ id, username });
     }
   }
