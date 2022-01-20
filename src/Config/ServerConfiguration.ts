@@ -15,11 +15,15 @@ import { ProcessUploadedFilesHook } from '@envuso/core/Server/InternalHooks/Proc
 import { SaveSessionHook } from '@envuso/core/Server/InternalHooks/SaveSessionHook';
 import { SetResponseCookiesHook } from '@envuso/core/Server/InternalHooks/SetResponseCookiesHook';
 
+import * as dotenv from 'dotenv';
+
 export class ServerConfiguration extends ConfigurationCredentials implements ServerConfig {
   /**
    * The port that fastify will listen on
    */
-  port = Environment.get<number>('PORT', 3000);
+  // port = Environment.get<number>('PORT', process.env.PORT);
+  // @ts-ignore
+  port = process.env.PORT || 3000;
 
   /**
    * Global middleware that will run on every application request
