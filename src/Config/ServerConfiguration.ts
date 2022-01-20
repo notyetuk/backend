@@ -22,6 +22,7 @@ export class ServerConfiguration extends ConfigurationCredentials implements Ser
    * The port that fastify will listen on
    */
   port = Environment.get<number>('$PORT', process.env.PORT);
+  address = '0.0.0.0';
 
   /**
    * Global middleware that will run on every application request
