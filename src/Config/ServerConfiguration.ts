@@ -16,6 +16,7 @@ import { SaveSessionHook } from '@envuso/core/Server/InternalHooks/SaveSessionHo
 import { SetResponseCookiesHook } from '@envuso/core/Server/InternalHooks/SetResponseCookiesHook';
 
 import * as dotenv from 'dotenv';
+import { RouterLogger } from '../App/Http/Middleware/RouterLogger';
 
 export class ServerConfiguration extends ConfigurationCredentials implements ServerConfig {
   /**
@@ -27,7 +28,7 @@ export class ServerConfiguration extends ConfigurationCredentials implements Ser
   /**
    * Global middleware that will run on every application request
    */
-  middleware = [StartSessionMiddleware, InjectViewGlobals, SetInertiaSharedDataMiddleware];
+  middleware = [StartSessionMiddleware, InjectViewGlobals, SetInertiaSharedDataMiddleware, RouterLogger];
 
   /**
    * We have a custom wrapper of fastify's server hooks

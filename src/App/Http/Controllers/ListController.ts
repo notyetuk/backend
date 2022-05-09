@@ -46,9 +46,10 @@ export class ListController extends Controller {
       {
         lists: this.lists,
       },
-      200
+      200,
     );
   }
+
   async aggregateTotal(userLists: List[]): Promise<null> {
     return new Promise((resolve) => {
       userLists.forEach(async (l) => {
@@ -77,6 +78,7 @@ export class ListController extends Controller {
                 total: {
                   $sum: '$items.price',
                 },
+                items: { $size: '$items' },
               },
             },
           ])

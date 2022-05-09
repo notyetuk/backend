@@ -45,14 +45,14 @@ export class ItemController extends Controller {
   }
 
   @put('/save/:id')
-  async saveItem() {
+  async saveItem(@param id: string) {
     const userId = context().getAdditional('id');
     const body = request().body<any>();
 
     await Item.query()
       .where({
         user: userId,
-        _id: body.id,
+        _id: id,
       })
       .update({
         title: body.title,
@@ -64,7 +64,7 @@ export class ItemController extends Controller {
     const item = await Item.query()
       .where({
         user: userId,
-        _id: body.id,
+        _id: id,
       })
       .get();
 

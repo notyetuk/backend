@@ -34,15 +34,23 @@ export class HomeController extends Controller {
     const token = request().get<string>('token');
 
     if (token) {
-      // @ts-ignore
-      const { id, exp } = await verify(token, Environment.get<string>('APP_KEY'));
+      const payload: any = await verify(token, Environment.get<string>('APP_KEY'));
 
-      if (exp > Date.now()) {
+      if (!payload || !payload.exp) {
+        return response().json({ m: 'something wrong with the token' }, 401);
+      }
+
+      if (payload && payload.exp > Date.now()) {
         return response().json({ m: 'expired' }, 401);
       }
 
-      const { username } = await User.find(id);
-      return response().json({ id, username });
+      if (payload && payload.id) {
+        const { username } = await User.find(payload.id);
+        return response().json({ id: payload.id, username });
+      }
+
+      // add an error fallback
+      return response().json({ error: 'something went wrong' }, 500);
     }
   }
 
@@ -64,7 +72,7 @@ export class HomeController extends Controller {
 
     // Auth.authoriseAs(_user);
     return response().json(
-      { token: _user.generateToken(), username: _user.username, message: 'logged in' },
+      { token: _user.generateToken(), id: _user._id, username: _user.username, message: 'logged in' },
       200
     );
   }

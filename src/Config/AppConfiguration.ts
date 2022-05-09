@@ -17,7 +17,6 @@ import {
 import {ServiceProviderContract} from "@envuso/core/Contracts/AppContainer/ServiceProviderContract";
 import {ExceptionHandlerConstructorContract} from "@envuso/core/Contracts/Common/Exception/ExceptionHandlerContract";
 import {InertiaServiceProvider} from "@envuso/core/Packages/Inertia/InertiaServiceProvider";
-import {RedisServiceProvider} from "@envuso/core/Redis/RedisServiceProvider";
 import {ExceptionHandler} from "../App/Exceptions/ExceptionHandler";
 
 
@@ -33,7 +32,6 @@ export class AppConfiguration extends ConfigurationCredentials implements Applic
 		SecurityServiceProvider,
 		SessionServiceProvider,
 		EventServiceProvider,
-		// RedisServiceProvider,
 		DatabaseServiceProvider,
 		EncryptionServiceProvider,
 		AuthenticationServiceProvider,
