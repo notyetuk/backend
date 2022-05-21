@@ -4,6 +4,7 @@
 /storage/logs/
 /storage/temp/
 /storage/sessions/
+/storage/avatars/**
 /dist/
 .env
 .env.development

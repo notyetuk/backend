@@ -11,7 +11,7 @@ export class StorageConfiguration extends ConfigurationCredentials implements St
 	 * The default storage provider to use on the request() helper
 	 * or when using Storage.get(), Storage.put() etc
 	 */
-	defaultDisk: keyof DisksList = 'local';
+	defaultDisk: keyof DisksList = 'storage';
 
 	disks: DisksList = {
 		s3      : {
@@ -30,7 +30,7 @@ export class StorageConfiguration extends ConfigurationCredentials implements St
 		},
 		local   : {
 			driver : 'local',
-			root   : path.join(process.cwd(), 'storage', 'local'),
+			root   : path.join(process.cwd(), 'storage'),
 		},
 		storage : {
 			driver : 'local',

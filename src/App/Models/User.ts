@@ -12,5 +12,7 @@ export class User extends Authenticatable<User> {
   email: string;
   password: string;
 
+  avatar?: string;
+
   createdAt: Date;
 }

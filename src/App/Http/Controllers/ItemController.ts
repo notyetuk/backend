@@ -1,12 +1,10 @@
 import {
   Controller,
   controller,
-  get,
   post,
   dto,
   DataTransferObject,
   response,
-  back,
   param,
   put,
   delete_,
