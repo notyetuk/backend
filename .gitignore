@@ -5,6 +5,7 @@
 /storage/temp/
 /storage/sessions/
 /storage/avatars/**
+!/storage/avatars/placeholder.png
 /dist/
 .env
 .env.development

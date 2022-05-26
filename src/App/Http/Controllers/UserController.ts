@@ -16,7 +16,6 @@ import fs from 'fs/promises';
 
 @controller('/user')
 export class UserController extends Controller {
-
   @middleware(new JwtMiddleware())
   @post('/avatar')
   async postAvatar() {
@@ -48,24 +47,27 @@ export class UserController extends Controller {
         avatar: fileNameToStore,
       });
 
-
     return response().json({ message: 'file uploaded' });
   }
 
-  @get('/avatar/:userId')
-  async getUserAvatar(@param userId: string) {
+  @get('/avatar/:username')
+  async getUserAvatar(@param username: string) {
+    const user = await User.query().where({ username }).get();
 
-    const user = await User.find(userId);
-
-    if (!user.avatar) {
+    if (!user.length) {
       return response().setCode(204).json({ message: 'no content here' });
     }
 
-    const ava = await fs.readFile(`./storage/avatars/${user.avatar}`);
+    let avatarBuffer;
+    try {
+      avatarBuffer = await fs.readFile(`./storage/avatars/${user[0].avatar ?? 'placeholder.png'}`);
+    } catch (error) {
+      return response().send();
+    }
 
     response().setHeader('content-type', 'image/jpeg');
-    response().setHeader('content-disposition', `inline; filename="${userId}"`);
-    response().setResponse(ava, 200).send();
+    response().setHeader('content-disposition', `inline; filename="${user[0]._id}"`);
+    response().setResponse(avatarBuffer, 200).send();
     return;
   }
 }
