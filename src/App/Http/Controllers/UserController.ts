@@ -62,7 +62,8 @@ export class UserController extends Controller {
     try {
       avatarBuffer = await fs.readFile(`./storage/avatars/${user[0].avatar ?? 'placeholder.png'}`);
     } catch (error) {
-      return response().send();
+      // I want a fallback avatar in case the file does not exist...
+      avatarBuffer = await fs.readFile(`./storage/avatars/placeholder.png`);
     }
 
     response().setHeader('content-type', 'image/jpeg');
