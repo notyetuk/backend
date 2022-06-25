@@ -4,11 +4,14 @@ import { Controller, controller, post, request } from '@envuso/core/Routing'
 export class DeployController extends Controller {
   @post('/frontend')
   deployFrontend() {
-    console.log('------ body ------');
-    console.log(request().body());
 
-    console.log('\n\n------ headers ------');
-    console.log(request().headers());
+    const { action } = request().body();
+
+    if (!action) {
+      return;
+    }
+
+    console.log(action);
 
     return;
   }
