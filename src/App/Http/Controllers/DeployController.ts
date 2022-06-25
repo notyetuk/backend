@@ -2,6 +2,8 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { Controller, controller, post, request, response } from '@envuso/core/Routing';
+import axios from 'axios';
+import Environment from '@envuso/core/AppContainer/Config/Environment';
 
 @controller('/deploy')
 export class DeployController extends Controller {
@@ -21,6 +23,12 @@ export class DeployController extends Controller {
     const script = path.resolve(process.cwd(), '../frontend.sh');
     const buildProcess = await promisify(exec);
     await buildProcess(`sh ${script}`);
+
+    await axios.post(Environment.get('DISCORD_WEBHOOK'),
+      {
+        content: 'The newest version of NotYet was built and deployed successfully!',
+      }
+    );
 
     return response().json({ done: 'build all done and deployed...' }, 200);
   }
