@@ -1,8 +1,8 @@
-import { Controller, controller, get, request } from '@envuso/core/Routing'
+import { Controller, controller, post, request } from '@envuso/core/Routing'
 
 @controller('/deploy')
 export class DeployController extends Controller {
-  @get('/frontend')
+  @post('/frontend')
   deployFrontend() {
     console.log('------ body ------');
     console.log(request().body());
