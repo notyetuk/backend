@@ -5,9 +5,7 @@ import { FastifyCorsOptions } from 'fastify-cors';
 import { default as FastifyMultipart, FastifyMultipartOptions } from 'fastify-multipart';
 import { ConfigurationCredentials } from '@envuso/core/AppContainer/Config/ConfigurationCredentials';
 import { ServerConfiguration as ServerConfig } from '@envuso/core/Contracts/Server/ServerContract';
-import { InjectViewGlobals } from '@envuso/core/Routing/Views/InjectViewGlobals';
 import { StartSessionMiddleware } from '@envuso/core/Session/Middleware/StartSessionMiddleware';
-import { SetInertiaSharedDataMiddleware } from '../App/Http/Middleware/SetInertiaSharedDataMiddleware';
 import { BindRequestContextHook } from '@envuso/core/Server/InternalHooks/BindRequestContextHook';
 import { ConvertEmptyStringsToNullHook } from '@envuso/core/Server/InternalHooks/ConvertEmptyStringsToNullHook';
 import { InitiateRequestContextHook } from '@envuso/core/Server/InternalHooks/InitiateRequestContextHook';
@@ -15,7 +13,6 @@ import { ProcessUploadedFilesHook } from '@envuso/core/Server/InternalHooks/Proc
 import { SaveSessionHook } from '@envuso/core/Server/InternalHooks/SaveSessionHook';
 import { SetResponseCookiesHook } from '@envuso/core/Server/InternalHooks/SetResponseCookiesHook';
 
-import * as dotenv from 'dotenv';
 import { RouterLogger } from '../App/Http/Middleware/RouterLogger';
 
 export class ServerConfiguration extends ConfigurationCredentials implements ServerConfig {
@@ -28,7 +25,10 @@ export class ServerConfiguration extends ConfigurationCredentials implements Ser
   /**
    * Global middleware that will run on every application request
    */
-  middleware = [StartSessionMiddleware, InjectViewGlobals, SetInertiaSharedDataMiddleware, RouterLogger];
+  middleware = [StartSessionMiddleware,
+    // InjectViewGlobals,
+    // SetInertiaSharedDataMiddleware,
+    RouterLogger];
 
   /**
    * We have a custom wrapper of fastify's server hooks

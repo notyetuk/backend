@@ -6,6 +6,7 @@ import {
   middleware,
   param,
   post,
+  put,
   request,
   response,
 } from '@envuso/core/Routing';
@@ -13,6 +14,9 @@ import { Storage } from '@envuso/core/Storage';
 import { JwtMiddleware } from '../Middleware/JwtMiddleware';
 import { User } from '../../Models/User';
 import fs from 'fs/promises';
+import * as crypto from 'crypto';
+import { ApiKey } from '../../Models/ApiKey';
+import { ObjectId } from 'mongodb';
 
 @controller('/user')
 export class UserController extends Controller {
@@ -68,7 +72,42 @@ export class UserController extends Controller {
 
     response().setHeader('content-type', 'image/jpeg');
     response().setHeader('content-disposition', `inline; filename="${user[0]._id}"`);
-    response().setResponse(avatarBuffer, 200).send();
+    response().setResponse(avatarBuffer, 200);
     return;
+  }
+
+  @middleware(new JwtMiddleware())
+  @put('/api-key')
+  async generateApiKey() {
+    const userId = context().getAdditional('id');
+    const key = crypto.randomUUID();
+
+    const oldKey = await ApiKey.query().where({ user: userId }).count();
+
+    if (oldKey) {
+      const newKey = await ApiKey.getCollection().findOneAndUpdate(
+        { user: userId },
+        { $set: { key: key } },
+        { returnDocument: 'after' },
+      );
+      return response().setResponse({ message: 'api key updated', key: newKey.value.key }, 200);
+    }
+
+    const apiKey = await ApiKey.create({
+      user: userId as ObjectId,
+      key: key,
+    });
+
+    return response().setResponse({ message: 'new api key created', key: apiKey.key }, 200);
+  }
+
+  @middleware(new JwtMiddleware())
+  @get('/api-key')
+  async getApiKey() {
+    const userId = context().getAdditional('id');
+
+    const apiKey = await ApiKey.query().where({ user: userId }).first();
+
+    return response().setResponse(apiKey, 200);
   }
 }
