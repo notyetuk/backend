@@ -71,9 +71,8 @@ export class UserController extends Controller {
     }
 
     response().setHeader('content-type', 'image/jpeg');
-    response().setHeader('content-disposition', `inline; filename="${user[0]._id}"`);
-    response().setResponse(avatarBuffer, 200);
-    return;
+    response().setHeader('content-disposition', `inline; filename="${user[0]._id.toString()}"`);
+    return response().setResponse(avatarBuffer, 200);
   }
 
   @middleware(new JwtMiddleware())
