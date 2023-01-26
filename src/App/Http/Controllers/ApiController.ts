@@ -2,6 +2,7 @@ import {
   context,
   controller,
   Controller,
+  get,
   middleware,
   post,
   request,
@@ -11,6 +12,7 @@ import { ApiMiddleware } from '../Middleware/ApiMiddleware';
 import { ApiKey } from '../../Models/ApiKey';
 import { UnauthorisedException } from '../../Exceptions/UnauthorisedException';
 import { Item } from '../../Models/Item';
+import { List } from '../../Models/List';
 
 @controller('/api')
 @middleware(new ApiMiddleware())
@@ -28,7 +30,7 @@ export class ApiController extends Controller {
 
     const item = new Item();
     // @ts-ignore
-    item.list = '--list-id--';
+    item.list = payload.list;
     // @ts-ignore
     item.title = payload.title;
     // @ts-ignore
@@ -42,5 +44,20 @@ export class ApiController extends Controller {
     await item.save();
 
     return response().setResponse({ user }, 200);
+  }
+
+  @get('/lists')
+  async getLists() {
+    const ctx = context();
+
+    const user = await ApiKey.query().where({ key: ctx.getAdditional('api-key') }).first();
+
+    if (!user) {
+      throw new UnauthorisedException('invalid api key');
+    }
+
+    const lists = await List.get({ user: user.user });
+
+    return response().setResponse(lists, 200);
   }
 }
